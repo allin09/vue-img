@@ -10,8 +10,8 @@
 
 ```
 Vue.use(VueImg, {
-  prefix: '',  // CDN 前缀
-  loading: '', // 默认加载图片
-  error: ''    // 错误时加载
+  prefix: '',  // CDN 前缀（必填）
+  loading: '', // 默认加载图片（必填）
+  error: ''    // 错误时加载（可选）
 });
 ```
