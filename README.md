@@ -8,7 +8,7 @@
 2. 使用自定义指令 `v-img:40="hashxxxxx"`，其中的 `40` 代表图片大小
 3. 初始化插件
 
-```
+```JS
 Vue.use(VueImg, {
   prefix: '',  // CDN 前缀（必填）
   loading: '', // 默认加载图片（必填）
