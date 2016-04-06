@@ -44,6 +44,25 @@ void function() {
     };
   }();
 
+  // 获取图片尺寸
+  var getSize = function getSize(str) {
+    var index = str.indexOf('*');
+    var width = void 0,
+      height = void 0;
+
+    if (index === -1) {
+      width = height = str;
+    } else {
+      width = str.slice(0, index);
+      height = str.slice(index + 1);
+    }
+
+    return {
+      width: width,
+      height: height
+    };
+  };
+
   // vue 插件
   vueImg.install = function(Vue, opt) {
     var prefix = opt.prefix || vueImg.cdn;
@@ -59,9 +78,9 @@ void function() {
 
         if (!hash) return;
 
-        var size = this.arg;
+        var size = getSize(this.arg);
         var path = prefix + readHash(hash);
-        var src = vueImg.canWebp ? path + '?imageMogr/thumbnail/' + size + 'x' + size + '/format/webp/quality/75' : path + '?w=' + size + '&h=' + size;
+        var src = vueImg.canWebp ? path + '?imageMogr/thumbnail/' + size.width + 'x' + size.height + '/format/webp/quality/75' : path + '?w=' + size + '&h=' + size;
         var img = new Image();
 
         img.src = src;

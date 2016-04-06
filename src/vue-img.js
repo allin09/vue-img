@@ -35,6 +35,25 @@ void function() {
     };
   }();
 
+  // 获取图片尺寸
+  const getSize = (str) => {
+    const index = str.indexOf('*');
+    let width,
+      height;
+
+    if (index === -1) {
+      width = height = str;
+    } else {
+      width = str.slice(0, index);
+      height = str.slice(index + 1);
+    }
+
+    return {
+      width,
+      height
+    };
+  };
+
   // vue 插件
   vueImg.install = (Vue, opt) => {
     const prefix = opt.prefix || vueImg.cdn;
@@ -49,9 +68,9 @@ void function() {
       update(hash) {
         if (!hash) return;
 
-        const size = this.arg;
+        const size = getSize(this.arg);
         const path = prefix + readHash(hash);
-        const src = vueImg.canWebp ? `${path}?imageMogr/thumbnail/${size}x${size}/format/webp/quality/75` : `${path}?w=${size}&h=${size}`;
+        const src = vueImg.canWebp ? `${path}?imageMogr/thumbnail/${size.width}x${size.height}/format/webp/quality/75` : `${path}?w=${size}&h=${size}`;
         const img = new Image();
 
         img.src = src;
