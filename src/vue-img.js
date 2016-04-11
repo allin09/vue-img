@@ -70,20 +70,19 @@ void function() {
 
         const size = getSize(this.arg);
         const path = prefix + readHash(hash);
-        const src = vueImg.canWebp ? `${path}?imageMogr/thumbnail/${size.width}x${size.height}/format/webp/quality/75` : `${path}?w=${size}&h=${size}`;
+        const src = vueImg.canWebp ? `${path}?imageMogr/thumbnail/${size.width}x${size.height}/format/webp/quality/75` : `${path}?w=${size.width}&h=${size.height}`;
         const img = new Image();
 
         img.src = src;
         img.onload = () => {
           this.el.src = src;
         };
-        img.error = () => {
+        img.onerror = () => {
           if (opt.error) {
             this.el.src = opt.error;
           }
         };
       }
-
     });
   };
 

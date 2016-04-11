@@ -80,14 +80,14 @@ void function() {
 
         var size = getSize(this.arg);
         var path = prefix + readHash(hash);
-        var src = vueImg.canWebp ? path + '?imageMogr/thumbnail/' + size.width + 'x' + size.height + '/format/webp/quality/75' : path + '?w=' + size + '&h=' + size;
+        var src = vueImg.canWebp ? path + '?imageMogr/thumbnail/' + size.width + 'x' + size.height + '/format/webp/quality/75' : path + '?w=' + size.width + '&h=' + size.height;
         var img = new Image();
 
         img.src = src;
         img.onload = function() {
           _this.el.src = src;
         };
-        img.error = function() {
+        img.onerror = function() {
           if (opt.error) {
             _this.el.src = opt.error;
           }
