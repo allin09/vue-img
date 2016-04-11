@@ -56,7 +56,7 @@ void function() {
 
   // vue 插件
   vueImg.install = (Vue, opt) => {
-    const prefix = opt.prefix || vueImg.cdn;
+    const prefix = typeof opt.prefix === 'string' ? opt.prefix : vueImg.cdn;
 
     Vue.directive('img', {
       acceptStatement: true,
