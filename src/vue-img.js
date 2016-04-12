@@ -30,25 +30,22 @@ void function() {
 
   // 获取 cdn 参数
   const getParam = (str) => {
-    let param = '?imageMogr/quality/75/';
     const format = vueImg.canWebp ? 'format/webp/' : 'format/jpg/';
+    let param = '?imageMogr/quality/75/' + format;
 
     // 不传入尺寸，返回原图
-    if (typeof str !== 'string') {
-      param += format;
-      return param;
-    }
+    if (typeof str !== 'string') return param;
 
     const index = str.indexOf('*');
 
     // 只指定宽度，等比缩放
     if (index === -1) {
-      param += `${format}thumbnail/${str}x/`;
+      param += `thumbnail/${str}x/`;
 
     // 指定宽高，cover 切图
     } else {
-      let size = str.slice(0, index) + 'x' + str.slice(index + 1);
-      param += `${format}thumbnail/!${size}r/gravity/Center/crop/${size}/`;
+      const size = str.slice(0, index) + 'x' + str.slice(index + 1);
+      param += `thumbnail/!${size}r/gravity/Center/crop/${size}/`;
     }
 
     return param;
