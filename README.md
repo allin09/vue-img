@@ -20,9 +20,9 @@ v-img:50*40 = hash      # 指定宽高，cover 展示
 
 ```JS
 Vue.use(VueImg, {
-  loading: '', // 默认原始图片（必填）
-  error: '',   // 报错替代图片（可选）
-  prefix: ''   // 自定义 CDN 前缀（可选）
+  loading: '',      // 默认原始图片（必填）
+  error: '',        // 报错替代图片（可选）
+  prefix: ''        // 自定义 CDN 前缀（可选）
 });
 ```
 
