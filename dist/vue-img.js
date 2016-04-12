@@ -10,39 +10,33 @@ void function() {
   // 定义 vueImg 对象
   var vueImg = {};
 
-  // hash 解析
-  var readHash = function readHash(hash) {
-    return (hash + '').replace(/^(\w)(\w\w)(\w{29}(\w*))$/, '/$1/$2/$3.$4');
-  };
-
-  // 读取 cdn 地址
+  // 设置 cdn 地址
+  vueImg.cdn = '//fuss10.elemecdn.com';
   void function() {
-    var rootHost = document.domain.replace(/^(.+?\.)??(?=(test\.|alpha\.|beta\.)?[^.]+\.\w+$)/, '');
-    var bases = ['//fuss10.elemecdn.com', '//fuss2.' + rootHost];
-    var index = 0;
-
-    void function callee() {
-      var src = bases[index++];
-      if (!src) return;
-      var img = new Image();
-      img.onerror = function() {
-        return callee();
-      };
-      img.src = vueImg.cdn = src;
-    }();
+    var domain = document.domain;
+    var bases = ['test', 'alpha', 'beta'];
+    var rootHost = bases.forEach(function(base) {
+      var url = base + '.elenet.me';
+      if (domain.match(url)) {
+        vueImg.cdn = '//fuss.' + url;
+      }
+    });
   }();
 
   // 检测 webP 支持
+  vueImg.canWebp = false;
   void function() {
     var img = new Image();
     img.src = 'data:image/webp;base64,UklGRkoAAABXRUJQVlA4WAoAAAAQAAAAAAAAAAAAQUxQSAsAAAABBxAREYiI/gcAAABWUDggGAAAADABAJ0BKgEAAQABABwlpAADcAD+/gbQAA==';
     img.onload = function() {
       vueImg.canWebp = true;
     };
-    img.onerror = function() {
-      vueImg.canWebp = false;
-    };
   }();
+
+  // hash 解析
+  var readHash = function readHash(hash) {
+    return (hash + '').replace(/^(\w)(\w\w)(\w{29}(\w*))$/, '/$1/$2/$3.$4');
+  };
 
   // 获取图片尺寸
   var getSize = function getSize(str) {
@@ -87,19 +81,19 @@ void function() {
         img.onload = function() {
           _this.el.src = src;
         };
-        img.onerror = function() {
-          if (opt.error) {
+        if (opt.error) {
+          img.onerror = function() {
             _this.el.src = opt.error;
-          }
-        };
+          };
+        }
       }
     });
   };
 
-  // CMD 模块支持
-  if ((typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) === "object") {
+  // UMD 模块支持
+  if ((typeof exports === 'undefined' ? 'undefined' : _typeof(exports)) === 'object') {
     module.exports = vueImg;
-  } else if (typeof define === "function" && define.amd) {
+  } else if (typeof define === 'function' && define.amd) {
     define([], function() {
       return vueImg;
     });

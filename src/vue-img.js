@@ -2,38 +2,31 @@ void function() {
   // 定义 vueImg 对象
   const vueImg = {};
 
-  // hash 解析
-  const readHash = hash => (hash + '').replace(/^(\w)(\w\w)(\w{29}(\w*))$/, '/$1/$2/$3.$4');
-
-  // 读取 cdn 地址
+  // 设置 cdn 地址
+  vueImg.cdn = '//fuss10.elemecdn.com'
   void function() {
-    const rootHost = document.domain.replace(/^(.+?\.)??(?=(test\.|alpha\.|beta\.)?[^.]+\.\w+$)/, '');
-    const bases = [
-      '//fuss10.elemecdn.com',
-      '//fuss2.' + rootHost
-    ];
-    let index = 0;
-
-    void function callee() {
-      const src = bases[index++];
-      if (!src) return;
-      const img = new Image();
-      img.onerror = () => callee();
-      img.src = vueImg.cdn = src;
-    }();
+    const domain = document.domain;
+    const bases = ['test', 'alpha', 'beta'];
+    const rootHost = bases.forEach(base => {
+      const url = base + '.elenet.me';
+      if (domain.match(url)) {
+        vueImg.cdn = '//fuss.' + url;
+      }
+    });
   }();
 
   // 检测 webP 支持
+  vueImg.canWebp = false;
   void function() {
     const img = new Image();
     img.src = 'data:image/webp;base64,UklGRkoAAABXRUJQVlA4WAoAAAAQAAAAAAAAAAAAQUxQSAsAAAABBxAREYiI/gcAAABWUDggGAAAADABAJ0BKgEAAQABABwlpAADcAD+/gbQAA==';
     img.onload = () => {
       vueImg.canWebp = true;
     };
-    img.onerror = () => {
-      vueImg.canWebp = false;
-    };
   }();
+
+  // hash 解析
+  const readHash = hash => (hash + '').replace(/^(\w)(\w\w)(\w{29}(\w*))$/, '/$1/$2/$3.$4');
 
   // 获取图片尺寸
   const getSize = (str) => {
@@ -77,19 +70,19 @@ void function() {
         img.onload = () => {
           this.el.src = src;
         };
-        img.onerror = () => {
-          if (opt.error) {
+        if (opt.error) {
+          img.onerror = () => {
             this.el.src = opt.error;
-          }
-        };
+          };
+        }
       }
     });
   };
 
-  // CMD 模块支持
-  if (typeof exports === "object") {
+  // UMD 模块支持
+  if (typeof exports === 'object') {
     module.exports = vueImg;
-  } else if (typeof define === "function" && define.amd) {
+  } else if (typeof define === 'function' && define.amd) {
     define([], () => vueImg);
   } else if (window.Vue) {
     window.VueImg = vueImg;
