@@ -28,26 +28,33 @@ void function() {
   // hash 解析
   const readHash = hash => (hash + '').replace(/^(\w)(\w\w)(\w{29}(\w*))$/, '/$1/$2/$3.$4');
 
-  // 获取图片尺寸
-  const getSize = (str) => {
-    const index = str.indexOf('*');
-    let width,
-      height;
+  // 获取 cdn 参数
+  const getParam = (str) => {
+    let param = '?imageMogr/quality/75/';
+    const format = vueImg.canWebp ? 'format/webp/' : 'format/jpg/';
 
-    if (index === -1) {
-      width = height = str;
-    } else {
-      width = str.slice(0, index);
-      height = str.slice(index + 1);
+    // 不传入尺寸，返回原图
+    if (typeof str !== 'string') {
+      param += format;
+      return param;
     }
 
-    return {
-      width,
-      height
-    };
+    const index = str.indexOf('*');
+
+    // 只指定宽度，等比缩放
+    if (index === -1) {
+      param += `${format}thumbnail/${str}x/`;
+
+    // 指定宽高，cover 切图
+    } else {
+      let size = str.slice(0, index) + 'x' + str.slice(index + 1);
+      param += `${format}thumbnail/!${size}r/gravity/Center/crop/${size}/`;
+    }
+
+    return param;
   };
 
-  // vue 插件
+  // vue 插件配置
   vueImg.install = (Vue, opt) => {
     const prefix = typeof opt.prefix === 'string' ? opt.prefix : vueImg.cdn;
 
@@ -61,9 +68,7 @@ void function() {
       update(hash) {
         if (!hash) return;
 
-        const size = getSize(this.arg);
-        const path = prefix + readHash(hash);
-        const src = vueImg.canWebp ? `${path}?imageMogr/thumbnail/${size.width}x${size.height}/format/webp/quality/75` : `${path}?w=${size.width}&h=${size.height}`;
+        const src = prefix + readHash(hash) + getParam(this.arg);
         const img = new Image();
 
         img.src = src;

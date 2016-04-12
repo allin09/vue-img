@@ -11,23 +11,24 @@ eleme 外卖平台团队常用组件，包含以下功能：
 ### 自定义指令
 
 ```bash
-v-img:40 = hash         # 宽 40，高 40 
-v-img:50*40 = hash      # 宽 50，高 40
+v-img = hash            # 使用原始尺寸
+v-img:40 = hash         # 指定宽度，等比缩放
+v-img:50*40 = hash      # 指定宽高，cover 展示
 ```
 
 ### 初始化插件
 
 ```JS
 Vue.use(VueImg, {
-  prefix: '',  // 自定义 CDN 前缀（可选）
   loading: '', // 默认原始图片（必填）
-  error: ''    // 报错替代图片（可选）
+  error: '',   // 报错替代图片（可选）
+  prefix: ''   // 自定义 CDN 前缀（可选）
 });
 ```
 
 ## 可用属性
 
-`vueImg` 对象包含两个可调用的属性：
+`vueImg` 对象包含两个外部可调用的属性：
 
 ```bash
 cdn          # [String]  当前可用的 CDN 前缀
