@@ -10,7 +10,7 @@ void function() {
   // 定义 vueImg 对象
   var vueImg = {};
 
-  // 设置 cdn 地址
+  // 设置 CDN 地址
   vueImg.cdn = '//fuss10.elemecdn.com';
   void function() {
     var domain = document.domain;
@@ -38,36 +38,34 @@ void function() {
     return (hash + '').replace(/^(\w)(\w\w)(\w{29}(\w*))$/, '/$1/$2/$3.$4');
   };
 
-  // 获取 cdn 参数
-  var getParam = function getParam(str) {
-    var format = vueImg.canWebp ? 'format/webp/' : 'format/jpg/';
-    var param = '?imageMogr/quality/75/' + format;
-
+  // 获取图片尺寸
+  var getSize = function getSize(str) {
     // 不传入尺寸，返回原图
-    if (typeof str !== 'string') return param;
+    if (!str) return '';
 
     var index = str.indexOf('*');
+    var size = 'thumbnail/';
 
     // 只指定宽度，等比缩放
     if (index === -1) {
-      param += 'thumbnail/' + str + 'x/';
+      size += str + 'x/';
 
     // 指定宽高，cover 切图
     } else {
-      var size = str.slice(0, index) + 'x' + str.slice(index + 1);
-      param += 'thumbnail/!' + size + 'r/gravity/Center/crop/' + size + '/';
+      var cover = str.slice(0, index) + 'x' + str.slice(index + 1);
+      size += '!' + cover + 'r/gravity/Center/crop/' + cover + '/';
     }
 
-    return param;
+    return size;
   };
 
-  // vue 插件配置
+  // Vue 插件配置
   vueImg.install = function(Vue, opt) {
     var prefix = typeof opt.prefix === 'string' ? opt.prefix : vueImg.cdn;
+    var quality = opt.quality <= 100 ? opt.quality : 75;
+    var param = '?imageMogr/quality/' + quality + '/format/';
 
     Vue.directive('img', {
-      acceptStatement: true,
-
       bind: function bind() {
         this.el.src = opt.loading;
       },
@@ -76,18 +74,20 @@ void function() {
 
         if (!hash) return;
 
-        var src = prefix + readHash(hash) + getParam(this.arg);
+        var format = vueImg.canWebp ? 'webp/' : 'jpg/';
+        var src = prefix + readHash(hash) + param + format + getSize(this.arg);
         var img = new Image();
 
         img.src = src;
+
         img.onload = function() {
           _this.el.src = src;
         };
-        if (opt.error) {
-          img.onerror = function() {
-            _this.el.src = opt.error;
-          };
-        }
+
+        if (!opt.error) return;
+        img.onerror = function() {
+          _this.el.src = opt.error;
+        };
       }
     });
   };

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+  <img v-img="imgSrc">
+  <img v-img:200="imgSrc">
+  <img v-img:200*200="imgSrc">
+
+  <img v-img="imgErr">
+
+  <script src="http://cdn.jsdelivr.net/vue/1.0.21/vue.min.js"></script>
+  <script src="../dist/vue-img.min.js"></script>
+  <script>
+    Vue.use(VueImg, {
+      loading: './default.png',
+      error: './error.png',
+      prefix: 'http://fuss10.elemecdn.com',
+      quality: 100
+    });
+
+    new Vue({
+      el: 'body',
+      data: {
+        imgSrc: '',
+        imgErr: ''
+      },
+      ready() {
+        setTimeout(() => {
+          this.imgSrc = '1fa68b8d589078c3d44e3ae3d7dac9fejpeg';
+          this.imgErr = 'abcdefgabcdefgabcdefg';
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>

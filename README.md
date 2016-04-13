@@ -20,9 +20,10 @@ v-img:50*40 = hash      # 指定宽高，cover 展示
 
 ```JS
 Vue.use(VueImg, {
-  loading: '',      // 默认原始图片（必填）
-  error: '',        // 报错替代图片（可选）
-  prefix: ''        // 自定义 CDN 前缀（可选）
+  loading: '',      // [String] 原始图片（必填）
+  error: '',        // [String] 错误图片（可选）
+  prefix: '',       // [String] 自定义 CDN（可选）
+  quality: 75       // [Number] 图片质量（可选）
 });
 ```
 
@@ -36,3 +37,7 @@ canWebp      # [Boolean] 当前设备是否支持 webP
 ```
 
 **注意：** 如果使用的是非模块化方案，`vueImg` 暴露的全局对象为 `VueImg`。
+
+## 开源协议
+
+MIT
