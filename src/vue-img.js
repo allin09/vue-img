@@ -26,35 +26,38 @@ void function() {
   }();
 
   // hash 解析
-  const readHash = hash => (hash + '').replace(/^(\w)(\w\w)(\w{29}(\w*))$/, '/$1/$2/$3.$4');
-
-  // 获取图片尺寸
-  const getSize = (str) => {
-    // 不传入尺寸，返回原图
-    if (!str) return '';
-
-    const index = str.indexOf('*');
-    let size = 'thumbnail/';
-
-    // 只指定宽度，等比缩放
-    if (index === -1) {
-      size += `${str}x/`;
-
-    // 指定宽高，cover 切图
-    } else {
-      const cover = str.slice(0, index) + 'x' + str.slice(index + 1);
-      size += `!${cover}r/gravity/Center/crop/${cover}/`;
-    }
-
-    return size;
-  };
+  vueImg.toPath = hash => (hash + '').replace(/^(\w)(\w\w)(\w{29}(\w*))$/, '/$1/$2/$3.$4');
 
   // Vue 插件配置
   vueImg.install = (Vue, opt) => {
+    // 获取 CDN 前缀
     const prefix = typeof opt.prefix === 'string' ? opt.prefix : vueImg.cdn;
-    const quality = opt.quality <= 100 ? opt.quality : 75;
-    const param = `?imageMogr/quality/${quality}/format/`;
 
+    // 获取图片质量
+    const quality = opt.quality <= 100 ? opt.quality : 75;
+
+    // 获取图片尺寸
+    const getSize = (str) => {
+      // 不传入尺寸，返回原图
+      if (!str) return '';
+
+      const index = str.indexOf('*');
+      let size = 'thumbnail/';
+
+      // 只指定宽度，等比缩放
+      if (index === -1) {
+        size += `${str}x/`;
+
+      // 指定宽高，cover 切图
+      } else {
+        const cover = str.slice(0, index) + 'x' + str.slice(index + 1);
+        size += `!${cover}r/gravity/Center/crop/${cover}/`;
+      }
+
+      return size;
+    };
+
+    // Vue 自定义指令
     Vue.directive('img', {
       bind() {
         this.el.src = opt.loading;
@@ -63,8 +66,10 @@ void function() {
       update(hash) {
         if (!hash) return;
 
-        const format = vueImg.canWebp ? 'webp/' : 'jpg/';
-        const src = prefix + readHash(hash) + param + format + getSize(this.arg);
+        const format = vueImg.canWebp ? 'webp' : 'jpg';
+        const param = `?imageMogr/quality/${quality}/format/${format}/` + getSize(this.arg);
+
+        const src = prefix + vueImg.toPath(hash) + param;
         const img = new Image();
 
         img.src = src;

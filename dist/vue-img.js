@@ -34,37 +34,40 @@ void function() {
   }();
 
   // hash 解析
-  var readHash = function readHash(hash) {
+  vueImg.toPath = function(hash) {
     return (hash + '').replace(/^(\w)(\w\w)(\w{29}(\w*))$/, '/$1/$2/$3.$4');
-  };
-
-  // 获取图片尺寸
-  var getSize = function getSize(str) {
-    // 不传入尺寸，返回原图
-    if (!str) return '';
-
-    var index = str.indexOf('*');
-    var size = 'thumbnail/';
-
-    // 只指定宽度，等比缩放
-    if (index === -1) {
-      size += str + 'x/';
-
-    // 指定宽高，cover 切图
-    } else {
-      var cover = str.slice(0, index) + 'x' + str.slice(index + 1);
-      size += '!' + cover + 'r/gravity/Center/crop/' + cover + '/';
-    }
-
-    return size;
   };
 
   // Vue 插件配置
   vueImg.install = function(Vue, opt) {
+    // 获取 CDN 前缀
     var prefix = typeof opt.prefix === 'string' ? opt.prefix : vueImg.cdn;
-    var quality = opt.quality <= 100 ? opt.quality : 75;
-    var param = '?imageMogr/quality/' + quality + '/format/';
 
+    // 获取图片质量
+    var quality = opt.quality <= 100 ? opt.quality : 75;
+
+    // 获取图片尺寸
+    var getSize = function getSize(str) {
+      // 不传入尺寸，返回原图
+      if (!str) return '';
+
+      var index = str.indexOf('*');
+      var size = 'thumbnail/';
+
+      // 只指定宽度，等比缩放
+      if (index === -1) {
+        size += str + 'x/';
+
+      // 指定宽高，cover 切图
+      } else {
+        var cover = str.slice(0, index) + 'x' + str.slice(index + 1);
+        size += '!' + cover + 'r/gravity/Center/crop/' + cover + '/';
+      }
+
+      return size;
+    };
+
+    // Vue 自定义指令
     Vue.directive('img', {
       bind: function bind() {
         this.el.src = opt.loading;
@@ -74,8 +77,10 @@ void function() {
 
         if (!hash) return;
 
-        var format = vueImg.canWebp ? 'webp/' : 'jpg/';
-        var src = prefix + readHash(hash) + param + format + getSize(this.arg);
+        var format = vueImg.canWebp ? 'webp' : 'jpg';
+        var param = '?imageMogr/quality/' + quality + '/format/' + format + '/' + getSize(this.arg);
+
+        var src = prefix + vueImg.toPath(hash) + param;
         var img = new Image();
 
         img.src = src;

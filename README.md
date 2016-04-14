@@ -29,11 +29,12 @@ Vue.use(VueImg, {
 
 ## 可用属性
 
-`vueImg` 对象包含两个外部可调用的属性：
+`vueImg` 对象包含的外部可调用属性：
 
 ```bash
-cdn          # [String]  当前可用的 CDN 前缀
-canWebp      # [Boolean] 当前设备是否支持 webP
+cdn          # [String]   当前可用的 CDN 前缀
+canWebp      # [Boolean]  当前设备是否支持 webP
+toPath       # [Function] 将 hash 转为 path
 ```
 
 **注意：** 如果使用的是非模块化方案，`vueImg` 暴露的全局对象为 `VueImg`。
