@@ -4,8 +4,13 @@ import toPath from './path.js';
 import getParam from './param.js';
 
 const directive = (Vue, opt, type) => {
+  // CDN's prefix
   const prefix = typeof opt.prefix === 'string' ? opt.prefix : cdn;
+
+  // image quality
   const quality = opt.quality <= 100 ? opt.quality : 75;
+
+  // set img.src or element.style.backgroundImage
   const setAttr = (el, src) => {
     if (type === 'img') {
       el['src'] = src;

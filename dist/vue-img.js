@@ -4,10 +4,11 @@
   (factory((global.VueImg = global.VueImg || {})));
 }(this, function (exports) { 'use strict';
 
+  // CDN's prefix in the production environment
   var cdn = '//fuss10.elemecdn.com';
 
+  // in the test environment
   var bases = ['test', 'alpha', 'beta'];
-
   bases.forEach(function (base) {
     if (window.document.domain.match(base + '.ele')) {
       cdn = '//fuss.' + base + '.elenet.me';
@@ -28,23 +29,22 @@
     return (hash + '').replace(/^(\w)(\w\w)(\w{29}(\w*))$/, '/$1/$2/$3.$4');
   };
 
-  // 获取图片尺寸
+  // get image size
   var getSize = function getSize(str) {
-    // 不传入尺寸，返回原图
+    // no size limit
     if (!str) return '';
 
     var index = str.indexOf('*');
     var size = 'thumbnail/';
 
-    // 只指定宽度，等比缩放
     if (index === -1) {
+      // only width
       size += str + 'x/';
-
-      // 指定宽高，cover 切图
     } else {
-        var cover = str.slice(0, index) + 'x' + str.slice(index + 1);
-        size += '!' + cover + 'r/gravity/Center/crop/' + cover + '/';
-      }
+      // both width and height
+      var cover = str.slice(0, index) + 'x' + str.slice(index + 1);
+      size += '!' + cover + 'r/gravity/Center/crop/' + cover + '/';
+    }
 
     return size;
   };
@@ -54,8 +54,13 @@
   };
 
   var directive = function directive(Vue, opt, type) {
+    // CDN's prefix
     var prefix = typeof opt.prefix === 'string' ? opt.prefix : cdn$1;
+
+    // image quality
     var quality = opt.quality <= 100 ? opt.quality : 75;
+
+    // set img.src or element.style.backgroundImage
     var setAttr = function setAttr(el, src) {
       if (type === 'img') {
         el['src'] = src;

@@ -1,4 +1,4 @@
-// 是否支持 webP
+// check webP support
 let canWebp = false;
 
 const img = new Image();

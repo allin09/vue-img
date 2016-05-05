@@ -1,17 +1,16 @@
-// 获取图片尺寸
+// get image size
 const getSize = (str) => {
-  // 不传入尺寸，返回原图
+  // no size limit
   if (!str) return '';
 
   const index = str.indexOf('*');
   let size = 'thumbnail/';
 
-  // 只指定宽度，等比缩放
   if (index === -1) {
+    // only width
     size += `${str}x/`;
-
-  // 指定宽高，cover 切图
   } else {
+    // both width and height
     const cover = str.slice(0, index) + 'x' + str.slice(index + 1);
     size += `!${cover}r/gravity/Center/crop/${cover}/`;
   }
