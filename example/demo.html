@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>vue-img demo</title>
+</head>
+<body>
+  <img v-img="imgSrc">
+  <img v-img:200="imgSrc">
+  <img v-img:200*200="imgSrc">
+
+  <img v-img="imgErr">
+
+  <div v-bgi="imgSrc" :style="myCls"></div>
+  <div v-bgi="imgErr" :style="myCls"></div>
+
+  <script src="http://github.elemecdn.com/vuejs/vue/v1.0.21/dist/vue.min.js"></script>
+  <script src="../dist/vue-img.min.js"></script>
+  <script>
+    Vue.use(VueImg, {
+      loading: './default.png',
+      error: './error.png',
+      prefix: 'http://fuss10.elemecdn.com',
+      quality: 100
+    });
+
+    new Vue({
+      el: 'body',
+      data: {
+        imgSrc: '',
+        imgErr: '',
+        myCls: {
+          width: '200px',
+          height: '200px',
+          backgroundColor: '#f00'
+        }
+      },
+      ready() {
+        setTimeout(() => {
+          this.imgSrc = '1fa68b8d589078c3d44e3ae3d7dac9fejpeg';
+          this.imgErr = 'abcdefgabcdefgabcdefg';
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>
