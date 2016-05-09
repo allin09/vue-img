@@ -78,7 +78,7 @@
 
         if (!hash) return;
 
-        var format = exports.canWebp ? 'webp' : 'jpg';
+        var format = exports.canWebp ? 'webp' : 'png';
         var src = prefix + toPath(hash) + getParam(quality, format, this.arg);
         var img = new Image();
 
