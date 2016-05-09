@@ -50,7 +50,7 @@
   };
 
   var getParam = function getParam(quality, format, size) {
-    return '?imageMogr/quality/' + quality + '/format/' + format + '/' + getSize(size);
+    return '?imageMogr/quality/' + quality + '/' + format + getSize(size);
   };
 
   var directive = function directive(Vue, opt, type) {
@@ -62,6 +62,8 @@
 
     // set img.src or element.style.backgroundImage
     var setAttr = function setAttr(el, src) {
+      if (!el) return;
+
       if (type === 'img') {
         el['src'] = src;
       } else {
@@ -78,7 +80,7 @@
 
         if (!hash) return;
 
-        var format = exports.canWebp ? 'webp' : 'png';
+        var format = exports.canWebp ? 'format/webp/' : '';
         var src = prefix + toPath(hash) + getParam(quality, format, this.arg);
         var img = new Image();
 

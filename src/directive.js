@@ -12,6 +12,8 @@ const directive = (Vue, opt, type) => {
 
   // set img.src or element.style.backgroundImage
   const setAttr = (el, src) => {
+    if (!el) return;
+
     if (type === 'img') {
       el['src'] = src;
     } else {
@@ -27,7 +29,7 @@ const directive = (Vue, opt, type) => {
     update(hash) {
       if (!hash) return;
 
-      const format = canWebp ? 'webp' : 'png';
+      const format = canWebp ? 'format/webp/' : '';
       const src = prefix + toPath(hash) + getParam(quality, format, this.arg);
       const img = new Image();
 
