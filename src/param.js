@@ -18,6 +18,6 @@ const getSize = (str) => {
   return size;
 };
 
-const getParam = (quality, format, size) => `?imageMogr/quality/${quality}/format/${format}/` + getSize(size);
+const getParam = (quality, format, size) => `?imageMogr/quality/${quality}/${format}` + getSize(size);
 
 export default getParam;

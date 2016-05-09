@@ -27,7 +27,7 @@ const directive = (Vue, opt, type) => {
     update(hash) {
       if (!hash) return;
 
-      const format = canWebp ? 'webp' : 'png';
+      const format = canWebp ? 'format/webp/' : '';
       const src = prefix + toPath(hash) + getParam(quality, format, this.arg);
       const img = new Image();
 
