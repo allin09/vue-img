@@ -62,7 +62,7 @@
 
     // set img.src or element.style.backgroundImage
     var setAttr = function setAttr(el, src) {
-      if (!el) return;
+      if (!el || !src) return;
 
       if (type === 'img') {
         el['src'] = src;

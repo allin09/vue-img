@@ -13,7 +13,7 @@ eleme 图片加载插件，包含以下功能：
 
 ```JS
 Vue.use(VueImg, {
-  loading: '',      // [String] 原始图片（必填）
+  loading: '',      // [String] 原始图片（可选）
   error: '',        // [String] 错误图片（可选）
   prefix: '',       // [String] 自定义前缀（可选）
   quality: 75       // [Number] 图片质量（可选）
