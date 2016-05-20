@@ -11,6 +11,20 @@ eleme 图片加载插件，包含以下功能：
 
 ### 安装插件
 
+#### NPM
+
+```bash
+npm install vue-img
+```
+
+#### CDN
+
+```bash
+<script src="//github.elemecdn.com/banricho/vue-img/1.1.4/dist/vue-img.min.js"></script>
+```
+
+### 配置插件
+
 ```JS
 Vue.use(VueImg, {
   loading: '',      // [String] 原始图片（可选）
