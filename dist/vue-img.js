@@ -72,27 +72,25 @@
     };
 
     Vue.directive(type, {
-      bind: function bind() {
-        setAttr(this.el, opt.loading);
+      bind: function bind(el) {
+        setAttr(el, opt.loading);
       },
-      update: function update(hash) {
-        var _this = this;
-
-        if (!hash) return;
+      update: function update(el, value, modifiers, vnode) {
+        if (!value) return;
 
         var format = exports.canWebp ? 'format/webp/' : '';
-        var src = prefix + toPath(hash) + getParam(quality, format, this.arg);
+        var src = prefix + toPath(value) + getParam(quality, format, vnode.data.directives[0].arg);
         var img = new Image();
 
         img.src = src;
 
         img.onload = function () {
-          setAttr(_this.el, src);
+          setAttr(el, src);
         };
 
         if (!opt.error) return;
         img.onerror = function () {
-          setAttr(_this.el, opt.error);
+          setAttr(el, opt.error);
         };
       }
     });

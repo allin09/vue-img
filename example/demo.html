@@ -5,16 +5,18 @@
   <title>vue-img demo</title>
 </head>
 <body>
-  <img v-img="imgSrc">
-  <img v-img:200="imgSrc">
-  <img v-img:200*200="imgSrc">
+  <div id="app">
+    <img v-img="imgSrc">
+    <img v-img:200="imgSrc">
+    <img v-img:200*200="imgSrc">
 
-  <img v-img="imgErr">
+    <img v-img="imgErr">
 
-  <div v-bgi="imgSrc" :style="myCls"></div>
-  <div v-bgi="imgErr" :style="myCls"></div>
+    <div v-bgi="imgSrc" :style="myCls"></div>
+    <div v-bgi="imgErr" :style="myCls"></div>
+  </div>
 
-  <script src="http://github.elemecdn.com/vuejs/vue/v1.0.21/dist/vue.min.js"></script>
+  <script src="./vue.js"></script>
   <script src="../dist/vue-img.min.js"></script>
   <script>
     Vue.use(VueImg, {
@@ -25,7 +27,7 @@
     });
 
     new Vue({
-      el: 'body',
+      el: '#app',
       data: {
         imgSrc: '',
         imgErr: '',
@@ -35,7 +37,7 @@
           backgroundColor: '#f00'
         }
       },
-      ready() {
+      mounted() {
         setTimeout(() => {
           this.imgSrc = '1fa68b8d589078c3d44e3ae3d7dac9fejpeg';
           this.imgErr = 'abcdefgabcdefgabcdefg';

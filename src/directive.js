@@ -22,26 +22,26 @@ const directive = (Vue, opt, type) => {
   };
 
   Vue.directive(type, {
-    bind() {
-      setAttr(this.el, opt.loading);
+    bind(el) {
+      setAttr(el, opt.loading);
     },
 
-    update(hash) {
-      if (!hash) return;
+    update(el, value, modifiers, vnode) {
+      if (!value) return;
 
       const format = canWebp ? 'format/webp/' : '';
-      const src = prefix + toPath(hash) + getParam(quality, format, this.arg);
+      const src = prefix + toPath(value) + getParam(quality, format, vnode.data.directives[0].arg);
       const img = new Image();
 
       img.src = src;
 
       img.onload = () => {
-        setAttr(this.el, src);
+        setAttr(el, src);
       };
 
       if (!opt.error) return;
       img.onerror = () => {
-        setAttr(this.el, opt.error);
+        setAttr(el, opt.error);
       };
     }
   });

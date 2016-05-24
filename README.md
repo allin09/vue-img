@@ -1,4 +1,4 @@
-# vue-img
+# vue-img@next
 
 eleme 图片加载插件，包含以下功能：
 
@@ -7,20 +7,14 @@ eleme 图片加载插件，包含以下功能：
 - 转换图片 hash 为 url
 - 设置图片与背景地址
 
+> next 版本支持 Vue 2，但由于 Vue 2 的限制，必须将 v-img / v-bgi 指令写在第一个。
+
 ## 使用方法
 
 ### 安装插件
 
-#### NPM
-
-```bash
-npm install vue-img
-```
-
-#### CDN
-
-```bash
-<script src="//github.elemecdn.com/banricho/vue-img/1.1.5/dist/vue-img.min.js"></script>
+```HTML
+<script src="//github.elemecdn.com/banricho/vue-img/next/dist/vue-img.min.js"></script>
 ```
 
 ### 配置插件
