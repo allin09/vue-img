@@ -7,14 +7,14 @@ eleme 图片加载插件，包含以下功能：
 - 转换图片 hash 为 url
 - 设置图片与背景地址
 
-> next 版本支持 Vue 2，但由于 Vue 2 的限制，必须将 v-img / v-bgi 指令写在第一个。
+> next 版本支持 Vue 2，由于 CDN 缓存，打包出的文件会带有时间戳。
 
 ## 使用方法
 
 ### 安装插件
 
 ```HTML
-<script src="//github.elemecdn.com/banricho/vue-img/next/dist/vue-img.1464081891000.js"></script>
+<script src="//github.elemecdn.com/banricho/vue-img/next/dist/vue-img.1464132434000.js"></script>
 ```
 
 ### 配置插件

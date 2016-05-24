@@ -26,11 +26,11 @@ const directive = (Vue, opt, type) => {
       setAttr(el, opt.loading);
     },
 
-    update(el, value, modifiers, vnode) {
-      if (!value) return;
+    update(el, binding) {
+      if (!binding.value) return;
 
       const format = canWebp ? 'format/webp/' : '';
-      const src = prefix + toPath(value) + getParam(quality, format, vnode.data.directives[0].arg);
+      const src = prefix + toPath(binding.value) + getParam(quality, format, binding.arg);
       const img = new Image();
 
       img.src = src;

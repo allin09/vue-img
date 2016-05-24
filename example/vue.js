@@ -60,7 +60,14 @@
     /**
      * Server rendering?
      */
-    _isServer: "client" === 'server'
+    _isServer: "client" === 'server',
+
+    /**
+     * Keeping track of all extended Component constructors
+     * so that we can update them in the case of global mixins being applied
+     * after their creation.
+     */
+    _ctors: []
   };
 
   /**
@@ -588,7 +595,24 @@
 
     Watcher.prototype.get = function get() {
       this.beforeGet();
-      var value = this.getter.call(this.vm, this.vm);
+      var value = void 0;
+      try {
+        value = this.getter.call(this.vm, this.vm);
+      } catch (e) {
+        if ("development" !== 'production') {
+          if (this.user) {
+            warn('Error when evaluating watcher with getter: ' + this.expression, this.vm);
+          } else {
+            warn('Error during component render', this.vm);
+          }
+          // throw the error on next tick so that it doesn't break the whole app
+          nextTick(function () {
+            throw e;
+          });
+        }
+        // return old value when evaluation fails so the current UI is preserved
+        value = this.value;
+      }
       // "touch" every property so they are all tracked as
       // dependencies for deep watching
       if (this.deep) {
@@ -1262,6 +1286,7 @@
       this.key = data && data.key;
       this.componentOptions = componentOptions;
       this.child = undefined;
+      this.parent = undefined;
     }
 
     VNode.prototype.setChildren = function setChildren(children) {
@@ -1495,7 +1520,7 @@
   var hooks = { init: init, prepatch: prepatch, insert: insert, destroy: destroy };
   var hooksToMerge = Object.keys(hooks);
 
-  function createComponent(Ctor, data, parent, context) {
+  function createComponent(Ctor, data, parent, context, tag) {
     if (!Ctor) {
       return;
     }
@@ -1544,8 +1569,8 @@
     }
 
     // return a placeholder vnode
-    var name = Ctor.options.name ? '-' + Ctor.options.name : '';
-    var vnode = new VNode('vue-component-' + Ctor.cid + name, data, undefined, undefined, undefined, undefined, context, { Ctor: Ctor, propsData: propsData, listeners: listeners, parent: parent, children: undefined }
+    var name = Ctor.options.name || tag;
+    var vnode = new VNode('vue-component-' + Ctor.cid + (name ? '-' + name : ''), data, undefined, undefined, undefined, undefined, context, { Ctor: Ctor, propsData: propsData, listeners: listeners, parent: parent, tag: tag, children: undefined }
     // children to be set later by renderElementWithChildren,
     // but before the init hook
     );
@@ -1554,20 +1579,15 @@
 
   function createComponentInstanceForVnode(vnode // we know it's MountedComponentVNode but flow doesn't
   ) {
-    var _vnode$componentOptio = vnode.componentOptions;
-    var Ctor = _vnode$componentOptio.Ctor;
-    var propsData = _vnode$componentOptio.propsData;
-    var listeners = _vnode$componentOptio.listeners;
-    var parent = _vnode$componentOptio.parent;
-    var children = _vnode$componentOptio.children;
-
+    var vnodeComponentOptions = vnode.componentOptions;
     var options = {
       _isComponent: true,
-      parent: parent,
-      propsData: propsData,
+      parent: vnodeComponentOptions.parent,
+      propsData: vnodeComponentOptions.propsData,
+      _componentTag: vnodeComponentOptions.tag,
       _parentVnode: vnode,
-      _parentListeners: listeners,
-      _renderChildren: children
+      _parentListeners: vnodeComponentOptions.listeners,
+      _renderChildren: vnodeComponentOptions.children
     };
     // check inline-template render functions
     var inlineTemplate = vnode.data.inlineTemplate;
@@ -1575,7 +1595,7 @@
       options.render = inlineTemplate.render;
       options.staticRenderFns = inlineTemplate.staticRenderFns;
     }
-    return new Ctor(options);
+    return new vnodeComponentOptions.Ctor(options);
   }
 
   function init(vnode) {
@@ -1584,10 +1604,10 @@
   }
 
   function prepatch(oldVnode, vnode) {
-    var _vnode$componentOptio2 = vnode.componentOptions;
-    var listeners = _vnode$componentOptio2.listeners;
-    var propsData = _vnode$componentOptio2.propsData;
-    var children = _vnode$componentOptio2.children;
+    var _vnode$componentOptio = vnode.componentOptions;
+    var listeners = _vnode$componentOptio.listeners;
+    var propsData = _vnode$componentOptio.propsData;
+    var children = _vnode$componentOptio.children;
 
     vnode.child = oldVnode.child;
     vnode.child._updateFromParent(propsData, // updated props
@@ -1736,7 +1756,7 @@
       if (config.isReservedTag(tag)) {
         return new VNode(tag, data, undefined, undefined, undefined, namespace, context);
       } else if (Ctor = resolveAsset(context.$options, 'components', tag)) {
-        return createComponent(Ctor, data, parent, context);
+        return createComponent(Ctor, data, parent, context, tag);
       } else {
         if ("development" !== 'production') {
           if (!namespace && config.isUnknownElement(tag)) {
@@ -1800,7 +1820,11 @@
         resolveSlots(vm, _renderChildren);
       }
       // render self
-      var vnode = render.call(vm._renderProxy) || emptyVNode;
+      var vnode = render.call(vm._renderProxy);
+      // return empty vnode in case the render function errored out
+      if (!(vnode instanceof VNode)) {
+        vnode = emptyVNode;
+      }
       // set parent
       vnode.parent = _parentVnode;
       // restore render state
@@ -2018,11 +2042,13 @@
 
   function initInternalComponent(vm, options) {
     var opts = vm.$options = Object.create(vm.constructor.options);
+    // doing this because it's faster than dynamic enumeration.
     opts.parent = options.parent;
     opts.propsData = options.propsData;
     opts._parentVnode = options._parentVnode;
     opts._parentListeners = options._parentListeners;
     opts._renderChildren = options._renderChildren;
+    opts._componentTag = options._componentTag;
     if (options.render) {
       opts.render = options.render;
       opts.staticRenderFns = opts.staticRenderFns;
@@ -2053,8 +2079,11 @@
       };
 
       formatComponentName = function formatComponentName(vm) {
-        var name = vm._isVue ? vm.$options.name : vm.name;
-        return name ? ' (found in component: <' + hyphenate(name) + '>)' : '';
+        if (vm.$root === vm) {
+          return ' (found in root instnace)';
+        }
+        var name = vm._isVue ? vm.$options.name || vm.$options._componentTag : vm.name;
+        return name ? ' (found in component: <' + hyphenate(name) + '>)' : ' (found in anonymous component. Use the "name" option for better debugging messages)';
       };
     })();
   }
@@ -2504,6 +2533,10 @@
   function initMixin$1(Vue) {
     Vue.mixin = function (mixin) {
       Vue.options = mergeOptions(Vue.options, mixin);
+      // update constructors that are already created
+      config._ctors.forEach(function (Ctor) {
+        Ctor.options = mergeOptions(Ctor['super'].options, Ctor.extendOptions);
+      });
     };
   }
 
@@ -2552,6 +2585,12 @@
       if (name) {
         Sub.options.components[name] = Sub;
       }
+      // book-keeping for global mixin edge cases. also expose a way to remove it
+      Sub.extendOptions = extendOptions;
+      config._ctors.push(Sub);
+      Sub.release = function () {
+        remove(config._ctors, Sub);
+      };
       // cache constructor
       if (isFirstExtend) {
         extendOptions._Ctor = Sub;
@@ -2965,10 +3004,11 @@
         // empty mount, create new root element
         createElm(vnode, insertedVnodeQueue);
       } else {
-        if (sameVnode(oldVnode, vnode)) {
+        var isRealElement = isDef(oldVnode.nodeType);
+        if (!isRealElement && sameVnode(oldVnode, vnode)) {
           patchVnode(oldVnode, vnode, insertedVnodeQueue);
         } else {
-          if (isDef(oldVnode.nodeType)) {
+          if (isRealElement) {
             // mounting to a real element
             // check if this is server-rendered content and if we can perform
             // a successful hydration.
@@ -3592,14 +3632,18 @@ var nodeOps = Object.freeze({
   } : {};
 
   var show = {
-    bind: function bind(el, value, _, vnode) {
+    bind: function bind(el, _ref, vnode) {
+      var value = _ref.value;
+
       var transition = getTransition(vnode);
       if (value && transition && transition.appea && !isIE9) {
         enter(vnode);
       }
       el.style.display = value ? '' : 'none';
     },
-    update: function update(el, value, _, vnode) {
+    update: function update(el, _ref2, vnode) {
+      var value = _ref2.value;
+
       var transition = getTransition(vnode);
       if (transition && !isIE9) {
         if (value) {
@@ -3655,7 +3699,7 @@ var nodeOps = Object.freeze({
               continue;
             }
           }
-          fn(vnode.elm, dir.value, dir.modifiers, vnode, oldVnode);
+          fn(vnode.elm, dir, vnode, oldVnode);
         }
       }
     }
@@ -4447,6 +4491,15 @@ var nodeOps = Object.freeze({
         // tree management
         if (!root) {
           root = element;
+          // check root element constraints
+          if ("development" !== 'production') {
+            if (tag === 'slot' || tag === 'template') {
+              warn$1('Cannot use <' + tag + '> as component root element because it may ' + 'contain multiple nodes:\n' + template);
+            }
+            if (element.attrsMap.hasOwnProperty('v-for')) {
+              warn$1('Cannot use v-for on component root element because it renders ' + 'multiple elements:\n' + template);
+            }
+          }
         } else if ("development" !== 'production' && !stack.length && !warned) {
           warned = true;
           warn$1('Component template should contain exactly one root element:\n\n' + template);
@@ -4846,7 +4899,7 @@ var nodeOps = Object.freeze({
     }
     // registerRef: _r(name, ref, vFor?, remove?)
     var code = '_r("' + dir.arg + '",n1.child||n1.elm,' + (isFor ? 'true' : 'false');
-    addHook(el, 'insert', code + ',false');
+    addHook(el, 'insert', code + ',false)');
     addHook(el, 'destroy', code + ',true)');
   }
 
@@ -5299,8 +5352,9 @@ var nodeOps = Object.freeze({
 
   function compileToFunctions(template, options) {
     var cache = options && options.preserveWhitespace === false ? cache1 : cache2;
-    if (cache[template]) {
-      return cache[template];
+    var key = options && options.delimiters ? String(options.delimiters) + template : template;
+    if (cache[key]) {
+      return cache[key];
     }
     var res = {};
     var compiled = compile(template, options);
@@ -5310,7 +5364,7 @@ var nodeOps = Object.freeze({
     for (var i = 0; i < l; i++) {
       res.staticRenderFns[i] = new Function(compiled.staticRenderFns[i]);
     }
-    return cache[template] = res;
+    return cache[key] = res;
   }
 
   var idToTemplate = cached(function (id) {
