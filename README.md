@@ -14,7 +14,7 @@ eleme 图片加载插件，包含以下功能：
 ### 安装插件
 
 ```HTML
-<script src="//github.elemecdn.com/banricho/vue-img/next/dist/vue-img.min.js"></script>
+<script src="//github.elemecdn.com/banricho/vue-img/next/dist/vue-img.1464081891000.js"></script>
 ```
 
 ### 配置插件
@@ -60,7 +60,6 @@ toPath       # [Function] 将 hash 转为 path
 ```bash
 fork + clone
 npm install
-npm run dev
 npm run build
 ```
 
