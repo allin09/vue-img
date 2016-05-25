@@ -8,7 +8,7 @@
   var cdn = '//fuss10.elemecdn.com';
 
   // in the test environment
-  var bases = ['test', 'alpha', 'beta'];
+  var bases = ['alpha', 'beta'];
   bases.forEach(function (base) {
     if (window.document.domain.match(base + '.ele')) {
       cdn = '//fuss.' + base + '.elenet.me';
