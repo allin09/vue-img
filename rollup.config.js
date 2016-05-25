@@ -5,7 +5,7 @@ const babel = require('rollup-plugin-babel').bind(null, {
   presets: ['es2015-rollup']
 });
 const uglify = require('rollup-plugin-uglify');
-const hash = Date.parse(new Date());
+const hash = (Date.parse(new Date()) / 1000).toString(16);
 
 del(['dist/**/*'])
   .then(() => rollup({

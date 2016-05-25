@@ -14,7 +14,7 @@ eleme 图片加载插件，包含以下功能：
 ### 安装插件
 
 ```HTML
-<script src="//github.elemecdn.com/banricho/vue-img/next/dist/vue-img.1464132434000.js"></script>
+<script src="//github.elemecdn.com/banricho/vue-img/next/dist/vue-img.574582c4.js"></script>
 ```
 
 ### 配置插件
