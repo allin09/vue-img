@@ -29,7 +29,7 @@ npm install vue-img
 
 ```JS
 Vue.use(VueImg, {
-  loading: '',      // [String] 原始图片（可选）
+  loading: '',      // [String] 占位图片（可选）
   error: '',        // [String] 错误图片（可选）
   prefix: '',       // [String] 自定义前缀（可选）
   quality: 75       // [Number] 图片质量（可选）
@@ -52,10 +52,10 @@ v-bgi:50*40 = hash
 
 ### 高级用法
 
-vue-img 在 1.2.0 版本中加入了指令修饰符 `now`，使用它将直接加载目标资源，跳过 `loading` 中配置的原始图。
+vue-img 在 1.2.0 版本中加入了指令修饰符 `now`，使用它将**立即**加载目标资源，忽略 `loading` 中配置的占位图。
 
 ```bash
-v-img.now = hash            # 直接加载目标资源，未完成或失败时为空
+v-img.now = hash            # 直接加载目标资源，未加载完成时为空
 v-img:50*40.now = hash      # 注意：修饰符应当在尺寸参数之后
 ```
 
@@ -77,8 +77,9 @@ toPath       # [Function] 将 hash 转为 path
 
 ## 注意事项
 
-- 本项目遵循 UMD 规范，暴露的全局变量为 `VueImg`
+- 本项目遵循 UMD 规范打包，全局变量为 `VueImg`
 - 指令 `v-bgi` 仅会设置 `background-image` 属性，你可能还需要自行设置 `background-size` `background-repeat`
+- [更多细节](https://github.com/banricho/vue-img/issues/3)
 
 ## 贡献代码
 
