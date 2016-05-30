@@ -73,6 +73,7 @@
 
     Vue.directive(type, {
       bind: function bind() {
+        if (this.modifiers.now) return;
         setAttr(this.el, opt.loading);
       },
       update: function update(hash) {

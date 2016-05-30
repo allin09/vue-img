@@ -23,6 +23,7 @@ const directive = (Vue, opt, type) => {
 
   Vue.directive(type, {
     bind() {
+      if (this.modifiers.now) return;
       setAttr(this.el, opt.loading);
     },
 

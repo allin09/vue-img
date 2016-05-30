@@ -9,10 +9,14 @@
   <img v-img:200="imgSrc">
   <img v-img:200*200="imgSrc">
 
+  <img v-img:200*200.now="imgSrc">
+
   <img v-img="imgErr">
 
   <div v-bgi="imgSrc" :style="myCls"></div>
   <div v-bgi="imgErr" :style="myCls"></div>
+
+  <div v-bgi.now="imgSrc" :style="myCls"></div>
 
   <script src="http://github.elemecdn.com/vuejs/vue/v1.0.24/dist/vue.min.js"></script>
   <script src="../dist/vue-img.min.js"></script>

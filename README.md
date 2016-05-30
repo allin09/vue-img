@@ -22,7 +22,7 @@ npm install vue-img
 #### CDN
 
 ```HTML
-<script src="//github.elemecdn.com/banricho/vue-img/1.1.6/dist/vue-img.min.js"></script>
+<script src="//github.elemecdn.com/banricho/vue-img/1.2.0/dist/vue-img.min.js"></script>
 ```
 
 ### 配置插件
@@ -50,7 +50,24 @@ v-bgi:40 = hash
 v-bgi:50*40 = hash
 ```
 
+### 高级用法
+
+vue-img 在 1.2.0 版本中加入了指令修饰符 `now`，使用它将直接加载目标资源，跳过 `loading` 中配置的原始图。
+
+```bash
+v-img.now = hash            # 直接加载目标资源，未完成或失败时为空
+v-img:50*40.now = hash      # 注意：修饰符应当在尺寸参数之后
+```
+
+使用 `now` 配合三元运算符，可以在接口未返回数据时，指定默认图。
+
+```HTML
+<header v-bgi.now="banner ? banner : '515c2eed4398be26ff02c2178e58ddb0jpeg'"></header>
+```
+
 ### 可读属性
+
+vue-img 向外部提供了一些属性和方法，方便在其它场合使用。你应当视它们为只读属性，避免直接修改。
 
 ```bash
 cdn          # [String]   当前的 CDN 前缀
